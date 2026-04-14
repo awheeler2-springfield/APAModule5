@@ -1,1 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clinical Evidence Documentation Simulator — Module 5</title>
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --panel:#ffffff;
+      --ink:#1f2a37;
+      --muted:#5b6675;
+      --line:#d7deea;
+      --accent:#2e5bff;
+      --accent-soft:#e9efff;
+      --success:#0f766e;
+      --success-soft:#dff7f3;
+      --danger:#b42318;
+      --danger-soft:#fde8e8;
+      --warning:#8a5b00;
+      --warning-soft:#fff4d6;
+      --badge-locked:#d9dee8;
+      --badge-earned:#2d3748;
+      --shadow:0 10px 30px rgba(31,42,55,0.08);
+      --radius:18px;
+    }
 
+    * { box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,#f7f9fd 0%,#eef3fb 100%);
+      color:var(--ink);
+    }
+
+    .app{
+      max-width:1200px;
+      margin:0 auto;
+      padding:24px;
+      display:grid;
+      grid-template-columns:320px 1fr;
+      gap:24px;
+      min-height:100vh;
+    }
+
+    .rail, .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .rail{
+      padding:20px;
+      position:sticky;
+      top:20px;
+      align-self:start;
+    }
+
+    .panel{
+      padding:24px;
+    }
+
+    .kicker{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      margin-bottom:14px;
+    }
+
+    h1,h2,h3,p{
+      margin-top:0;
+    }
+
+    h1{
+      font-size:30px;
+      line-height:1.15;
+      margin-bottom:12px;
+    }
+
+    h2{
+      font-size:22px;
+      margin-bottom:12px;
+    }
+
+    h3{
+      font-size:18px;
+      margin-bottom:10px;
+    }
+
+    .subtle{
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .badge-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:18px;
+      margin-bottom:18px;
+      background:#fbfcff;
+    }
+
+    .badge-visual{
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      margin:0 auto 14px;
+      background:var(--badge-locked);
+      color:#fff;
+      font-size:42px;
+      font-weight:700;
+      transition:.25s ease;
+      border:6px solid #eef2f7;
+    }
+
+    .badge-visual.earned{
+      background:var(--badge-earned);
+      border-color:#cfd7e6;
+    }
+
+    .badge-name{
+      text-align:center;
+      font-weight:700;
+      font-size:18px;
+      margin-bottom:6px;
+    }
+
+    .badge-state{
+      text-align:center;
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:0;
+    }
+
+    .metric{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 0;
+      border-top:1px solid var(--line);
+      font-size:14px;
+    }
+
+    .metric:first-of-type{
+      border-top:none;
+      padding-top:0;
+    }
+
+    .metric strong{
+      font-size:15px;
+    }
+
+    .life-cycle{
+      margin-top:18px;
+      padding:14px;
+      border-radius:14px;
+      background:#f8faff;
+      border:1px solid var(--line);
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .life-cycle .active{
+      font-weight:700;
+      color:var(--accent);
+    }
+
+    .section{
+      margin-bottom:22px;
+    }
+
+    .overview{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fbfcff;
+      padding:18px;
+    }
+
+    .case-card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px;
+      background:#fff;
+      margin-bottom:20px;
+    }
+
+    .case-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+
+    .case-pill{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#f1f5fb;
+      color:#334155;
+      font-size:12px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .paragraph-box{
+      border:1px solid var(--line);
+      background:#fafcff;
+      border-radius:14px;
+      padding:16px;
+      line-height:1.65;
+      margin-bottom:18px;
+      white-space:pre-line;
+    }
+
+    .question{
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .options{
+      display:grid;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .option{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px 14px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      cursor:pointer;
+      transition:.2s ease;
+      background:#fff;
+    }
+
+    .option:hover{
+      border-color:#b9c6dd;
+      background:#fbfdff;
+    }
+
+    .option input{
+      margin-top:2px;
+      flex-shrink:0;
+    }
+
+    .btn-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      appearance:none;
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      font-weight:700;
+      font-size:14px;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .primary{
+      background:var(--accent);
+      color:#fff;
+    }
+
+    .primary:hover{
+      filter:brightness(.97);
+    }
+
+    .secondary{
+      background:#edf2fb;
+      color:#334155;
+    }
+
+    .secondary:hover{
+      background:#e5ecf9;
+    }
+
+    .feedback{
+      margin-top:16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      padding:16px;
+      display:none;
+    }
+
+    .feedback.show{
+      display:block;
+    }
+
+    .feedback.correct{
+      background:var(--success-soft);
+      border-color:#bfe9e2;
+    }
+
+    .feedback.incorrect{
+      background:var(--danger-soft);
+      border-color:#f7c8c8;
+    }
+
+    .feedback h4{
+      margin:0 0 10px;
+      font-size:16px;
+    }
+
+    .feedback p{
+      margin:0 0 8px;
+      line-height:1.55;
+    }
+
+    .score-banner{
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:14px;
+      background:#f8fafc;
+      border:1px solid var(--line);
+      display:none;
+    }
+
+    .score-banner.show{
+      display:block;
+    }
+
+    .doc-panel{
+      border-top:2px solid #e8eef8;
+      padding-top:26px;
+      margin-top:30px;
+    }
+
+    textarea{
+      width:100%;
+      min-height:180px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      font:inherit;
+      resize:vertical;
+      line-height:1.55;
+      background:#fff;
+    }
+
+    .diagnostic{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:18px;
+      background:#fbfcff;
+      display:none;
+    }
+
+    .diagnostic.show{
+      display:block;
+    }
+
+    .diag-list{
+      display:grid;
+      gap:10px;
+      margin:14px 0 8px;
+    }
+
+    .diag-item{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .diag-mark{
+      font-weight:700;
+      font-size:18px;
+      line-height:1;
+      width:18px;
+      flex-shrink:0;
+      margin-top:1px;
+    }
+
+    .diag-pass{
+      color:var(--success);
+    }
+
+    .diag-fail{
+      color:var(--danger);
+    }
+
+    .outcome{
+      padding:14px 16px;
+      border-radius:14px;
+      margin-top:14px;
+      font-weight:700;
+    }
+
+    .outcome.pass{
+      background:var(--success-soft);
+      color:#0b5c55;
+      border:1px solid #bfe9e2;
+    }
+
+    .outcome.fail{
+      background:var(--warning-soft);
+      color:#7a5300;
+      border:1px solid #f1dfa7;
+    }
+
+    .model-note{
+      margin-top:18px;
+      padding:18px;
+      border-radius:16px;
+      background:#f6f8fc;
+      border:1px solid var(--line);
+      display:none;
+    }
+
+    .model-note.show{
+      display:block;
+    }
+
+    .helper{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+      line-height:1.5;
+    }
+
+    .footer-note{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    @media (max-width: 980px){
+      .app{
+        grid-template-columns:1fr;
+      }
+      .rail{
+        position:static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail">
+      <div class="badge-card">
+        <div id="badgeVisual" class="badge-visual" aria-hidden="true">M5</div>
+        <div class="badge-name">Evidence Integration Specialist</div>
+        <p id="badgeState" class="badge-state">Locked — earn 75% competency to unlock</p>
+      </div>
+
+      <div class="metric">
+        <span>Module</span>
+        <strong>5 / 6</strong>
+      </div>
+      <div class="metric">
+        <span>Focus</span>
+        <strong>Reasoning</strong>
+      </div>
+      <div class="metric">
+        <span>Cases Correct</span>
+        <strong><span id="correctCount">0</span> / <span id="totalCount">5</span></strong>
+      </div>
+      <div class="metric">
+        <span>Documentation Score</span>
+        <strong><span id="docScoreText">0 / 4</span></strong>
+      </div>
+
+      <div class="life-cycle">
+        <strong>Evidence Lifecycle</strong><br />
+        Evidence Triage → Source Intake → Documentation → Citation Signals → <span class="active">Integration</span> → Evidence Stewardship
+      </div>
+
+      <p class="footer-note">
+        Clinical Evidence Management System:
+        evidence must be usable, traceable, and meaningful in professional healthcare communication.
+      </p>
+    </aside>
+
+    <main class="panel">
+      <div class="kicker">Clinical Evidence Documentation Simulator</div>
+      <h1>Module 5 — Evidence Integration Procedure</h1>
+
+      <section class="section overview">
+        <h2>Step 5: Integrate evidence into reasoning</h2>
+        <p class="subtle">
+          In this phase, evidence must be integrated into clinical reasoning so that it supports, clarifies, and justifies claims.
+          Evidence that is present but not explained—or poorly connected—can lead to misinterpretation in healthcare communication.
+        </p>
+        <p class="subtle" style="margin-bottom:0;">
+          In academic writing, this means explaining how research supports your point rather than simply attaching a citation to a sentence.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Case Sequence</h2>
+        <div id="caseContainer"></div>
+        <div id="caseSummary" class="score-banner" aria-live="polite"></div>
+      </section>
+
+      <section id="docSection" class="doc-panel hidden">
+        <h2>Case Documentation Log</h2>
+        <p class="subtle">
+          Write a brief clinical documentation note explaining why evidence should be integrated into reasoning rather than simply attached to a claim.
+        </p>
+
+        <textarea id="docInput" placeholder="Enter your note here..."></textarea>
+        <div class="helper">
+          Submit your note. The system will verify detected protocol categories after you write. Revision and resubmission are allowed.
+        </div>
+
+        <div class="btn-row" style="margin-top:14px;">
+          <button id="verifyBtn" class="primary">Run Protocol Verification</button>
+          <button id="clearBtn" class="secondary">Clear Note</button>
+        </div>
+
+        <div id="diagnosticPanel" class="diagnostic" aria-live="polite">
+          <h3>Protocol Verification</h3>
+          <p class="subtle" style="margin-bottom:0;">
+            Post-submission diagnostic for evidence integration competencies.
+          </p>
+          <div id="diagList" class="diag-list"></div>
+          <div id="outcomeBox" class="outcome"></div>
+        </div>
+
+        <div id="modelNote" class="model-note">
+          <h3>Model Documentation Statement</h3>
+          <p style="margin-bottom:0; line-height:1.65;">
+            Evidence must be integrated into reasoning so that it clearly supports the claim being made.
+            Simply including a source is not sufficient; the writer must explain how the evidence relates to the claim and what it demonstrates.
+            Without this explanation, evidence may appear disconnected, reducing clarity and weakening the credibility of the communication.
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const cases = [
+      {
+        difficulty: "Foundational",
+        paragraph:
+`Effective pain management improves patient recovery outcomes. A recent study found that patients receiving multimodal pain treatment reported lower pain scores (Garcia et al., 2022). Pain is an important factor in recovery.`,
+        question: "What is the main integration problem in this paragraph?",
+        options: [
+          "The connection between the claim and evidence is unclear.",
+          "The explanation of how the evidence supports reasoning is insufficient.",
+          "Evidence is dropped or disconnected.",
+          "The paragraph lacks clarity or coherence."
+        ],
+        correctIndex: 2,
+        rationale: "The source is present, but it is dropped into the paragraph without being explained. The writer does not clarify how the finding about multimodal pain treatment supports the claim about recovery outcomes.",
+        implication: "In healthcare communication, dropped evidence can weaken justification for a recommendation or make documentation appear unsupported."
+      },
+      {
+        difficulty: "Foundational",
+        paragraph:
+`Patient education can improve medication adherence. Research shows that patients who understand their treatment plans are more likely to follow them (Nguyen & Patel, 2021). This is helpful.`,
+        question: "What is the main integration problem in this paragraph?",
+        options: [
+          "The paragraph lacks clarity or coherence.",
+          "The explanation of how the evidence supports reasoning is insufficient.",
+          "Evidence is dropped or disconnected.",
+          "The connection between the claim and evidence is unclear."
+        ],
+        correctIndex: 1,
+        rationale: "The paragraph gestures toward explanation, but 'This is helpful' is too vague to explain how the evidence supports the claim about adherence.",
+        implication: "Vague explanation can make sound evidence less usable because readers are left to infer the reasoning on their own."
+      },
+      {
+        difficulty: "Intermediate",
+        paragraph:
+`Hydration is essential for preventing complications in hospitalized patients. A study found that nurses prefer electronic charting systems (Lee, 2021), which shows that hydration protocols are important.`,
+        question: "What is the main integration problem in this paragraph?",
+        options: [
+          "The connection between the claim and evidence is unclear.",
+          "Evidence is dropped or disconnected.",
+          "The paragraph lacks clarity or coherence.",
+          "The explanation of how the evidence supports reasoning is insufficient."
+        ],
+        correctIndex: 0,
+        rationale: "The cited evidence concerns charting preferences, not hydration or complications. The issue is not just weak explanation; the evidence itself does not clearly connect to the claim.",
+        implication: "Misaligned evidence can create false support, which is especially risky in evidence-based healthcare writing."
+      },
+      {
+        difficulty: "Intermediate",
+        paragraph:
+`Sleep quality should be assessed during inpatient recovery. Patients with interrupted sleep often report slower recovery and lower satisfaction (Morris et al., 2020). Because recovery matters, hospitals should pay attention to sleep.`,
+        question: "What is the main integration problem in this paragraph?",
+        options: [
+          "The explanation of how the evidence supports reasoning is insufficient.",
+          "The paragraph lacks clarity or coherence.",
+          "The connection between the claim and evidence is unclear.",
+          "Evidence is dropped or disconnected."
+        ],
+        correctIndex: 0,
+        rationale: "The evidence is relevant, but the explanation is underdeveloped. The paragraph does not clearly explain how lower satisfaction and slower recovery support the specific recommendation to assess sleep quality.",
+        implication: "When reasoning is only partially stated, the recommendation may seem intuitive rather than evidence-based."
+      },
+      {
+        difficulty: "Advanced",
+        paragraph:
+`Hospitals should expand interpreter access for patients with limited English proficiency. Studies have found that language barriers are associated with misunderstandings about discharge instructions and medication use (Santos & Reeves, 2023). In many hospitals, discharge processes are already difficult for patients.`,
+        question: "What is the main integration problem in this paragraph?",
+        options: [
+          "Evidence is dropped or disconnected.",
+          "The paragraph lacks clarity or coherence.",
+          "The explanation of how the evidence supports reasoning is insufficient.",
+          "The connection between the claim and evidence is unclear."
+        ],
+        correctIndex: 2,
+        rationale: "The evidence is relevant, but the final sentence shifts into a broad statement without explicitly explaining how interpreter access would address the documented misunderstandings.",
+        implication: "Even credible evidence can lose force if the writer does not directly connect findings to the proposed action."
+      }
+    ];
+
+    const protocolCategories = [
+      {
+        label: "Connection between claim and evidence",
+        patterns: [
+          /connect/i,
+          /link/i,
+          /relat(es|e|ed|ing)?\s+(the\s+)?evidence\s+(to|with)\s+(the\s+)?claim/i,
+          /support(s|ed|ing)?\s+(the\s+)?claim/i,
+          /evidence\s+(and|to)\s+(the\s+)?claim/i,
+          /ties?\s+(the\s+)?evidence\s+to\s+(the\s+)?claim/i,
+          /shows?\s+how\s+(the\s+)?evidence\s+supports?\s+(the\s+)?claim/i
+        ]
+      },
+      {
+        label: "Explanation of how evidence supports reasoning",
+        patterns: [
+          /shows?\s+that/i,
+          /demonstrat(es|e|ed|ing)?/i,
+          /indicat(es|e|ed|ing)?/i,
+          /explain(s|ed|ing)?\s+how/i,
+          /support(s|ed|ing)?\s+the\s+reason/i,
+          /reason(ing)?/i,
+          /why\s+the\s+evidence/i,
+          /what\s+the\s+evidence\s+means/i
+        ]
+      },
+      {
+        label: "Avoidance of dropped/disconnected evidence",
+        patterns: [
+          /not\s+just\s+(add|added|attach|attached|include|included)/i,
+          /not\s+be\s+left\s+alone/i,
+          /not\s+simply\s+(attached|added|included)/i,
+          /avoid(s|ed|ing)?\s+dropped\s+evidence/i,
+          /avoid(s|ed|ing)?\s+disconnect(ed|ion)?/i,
+          /must\s+be\s+explained/i,
+          /cannot\s+stand\s+alone/i,
+          /rather\s+than\s+simply\s+attach/i
+        ]
+      },
+      {
+        label: "Reader clarity or coherence",
+        patterns: [
+          /clear/i,
+          /clarity/i,
+          /coheren(t|ce)/i,
+          /reader/i,
+          /understand/i,
+          /easy\s+to\s+follow/i,
+          /makes?\s+sense/i,
+          /confus(e|ing|ion)/i
+        ]
+      }
+    ];
+
+    const caseContainer = document.getElementById("caseContainer");
+    const correctCountEl = document.getElementById("correctCount");
+    const totalCountEl = document.getElementById("totalCount");
+    const caseSummary = document.getElementById("caseSummary");
+    const docSection = document.getElementById("docSection");
+    const verifyBtn = document.getElementById("verifyBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const docInput = document.getElementById("docInput");
+    const diagnosticPanel = document.getElementById("diagnosticPanel");
+    const diagList = document.getElementById("diagList");
+    const outcomeBox = document.getElementById("outcomeBox");
+    const modelNote = document.getElementById("modelNote");
+    const docScoreText = document.getElementById("docScoreText");
+    const badgeVisual = document.getElementById("badgeVisual");
+    const badgeState = document.getElementById("badgeState");
+
+    totalCountEl.textContent = cases.length;
+
+    let answeredCases = 0;
+    let correctCases = 0;
+    let earnedBadge = false;
+
+    function renderCases() {
+      caseContainer.innerHTML = "";
+
+      cases.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "case-card";
+
+        const optionsHTML = item.options.map((option, optIndex) => {
+          return `
+            <label class="option">
+              <input type="radio" name="case-${index}" value="${optIndex}" />
+              <span>${option}</span>
+            </label>
+          `;
+        }).join("");
+
+        card.innerHTML = `
+          <div class="case-meta">
+            <span class="case-pill">Case ${index + 1}</span>
+            <span class="case-pill">${item.difficulty}</span>
+          </div>
+          <div class="paragraph-box">${item.paragraph}</div>
+          <div class="question">${item.question}</div>
+          <div class="options">${optionsHTML}</div>
+          <div class="btn-row">
+            <button class="primary" data-action="submit-case" data-index="${index}">Submit Case</button>
+          </div>
+          <div id="feedback-${index}" class="feedback" aria-live="polite"></div>
+        `;
+
+        caseContainer.appendChild(card);
+      });
+    }
+
+    function updateCaseProgress() {
+      correctCountEl.textContent = correctCases;
+
+      if (answeredCases === cases.length) {
+        caseSummary.classList.add("show");
+        caseSummary.innerHTML = `
+          <strong>Case Sequence Complete.</strong><br />
+          You answered <strong>${correctCases} of ${cases.length}</strong> cases correctly.
+          Continue to the Case Documentation Log to complete protocol verification.
+        `;
+        docSection.classList.remove("hidden");
+        docSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function lockCase(index) {
+      const submitBtn = document.querySelector(`button[data-index="${index}"]`);
+      const radios = document.querySelectorAll(`input[name="case-${index}"]`);
+      submitBtn.disabled = true;
+      submitBtn.classList.remove("primary");
+      submitBtn.classList.add("secondary");
+      submitBtn.textContent = "Case Submitted";
+      radios.forEach(r => r.disabled = true);
+    }
+
+    function handleCaseSubmit(index) {
+      const selected = document.querySelector(`input[name="case-${index}"]:checked`);
+      const feedbackBox = document.getElementById(`feedback-${index}`);
+
+      if (!selected) {
+        feedbackBox.className = "feedback incorrect show";
+        feedbackBox.innerHTML = `
+          <h4>✘ No Response Recorded</h4>
+          <p><strong>Rationale:</strong> Select one response before submitting the case.</p>
+          <p><strong>Professional implication:</strong> Incomplete review can interrupt evidence verification and documentation quality.</p>
+        `;
+        return;
+      }
+
+      const selectedIndex = Number(selected.value);
+      const item = cases[index];
+      const isCorrect = selectedIndex === item.correctIndex;
+
+      answeredCases += 1;
+      if (isCorrect) correctCases += 1;
+
+      feedbackBox.className = `feedback ${isCorrect ? "correct" : "incorrect"} show`;
+      feedbackBox.innerHTML = `
+        <h4>${isCorrect ? "✔ Correct" : "✘ Incorrect"}</h4>
+        <p><strong>Rationale:</strong> ${item.rationale}</p>
+        <p><strong>Professional implication:</strong> ${item.implication}</p>
+      `;
+
+      lockCase(index);
+      updateCaseProgress();
+    }
+
+    caseContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest('button[data-action="submit-case"]');
+      if (!btn) return;
+      handleCaseSubmit(Number(btn.dataset.index));
+    });
+
+    function detectCategory(text, patterns) {
+      return patterns.some(pattern => pattern.test(text));
+    }
+
+    function verifyDocumentation() {
+      const text = docInput.value.trim();
+
+      if (!text) {
+        diagnosticPanel.classList.add("show");
+        diagList.innerHTML = `
+          <div class="diag-item">
+            <span class="diag-mark diag-fail">✘</span>
+            <div>Please enter a documentation note before running protocol verification.</div>
+          </div>
+        `;
+        outcomeBox.className = "outcome fail";
+        outcomeBox.textContent = "Status: Not scored";
+        return;
+      }
+
+      let score = 0;
+      diagList.innerHTML = "";
+
+      protocolCategories.forEach(category => {
+        const hit = detectCategory(text, category.patterns);
+        if (hit) score += 1;
+
+        const item = document.createElement("div");
+        item.className = "diag-item";
+        item.innerHTML = `
+          <span class="diag-mark ${hit ? "diag-pass" : "diag-fail"}">${hit ? "✔" : "✘"}</span>
+          <div>${category.label}</div>
+        `;
+        diagList.appendChild(item);
+      });
+
+      docScoreText.textContent = `${score} / 4`;
+      diagnosticPanel.classList.add("show");
+
+      if (score >= 3) {
+        outcomeBox.className = "outcome pass";
+        outcomeBox.textContent = `Status: PASS — ${score}/4 competencies detected. Badge unlocked.`;
+        modelNote.classList.add("show");
+        unlockBadge();
+      } else {
+        outcomeBox.className = "outcome fail";
+        outcomeBox.textContent = `Status: REVISE AND RESUBMIT — ${score}/4 competencies detected. You need at least 3/4 to unlock the badge.`;
+        modelNote.classList.remove("show");
+      }
+    }
+
+    function unlockBadge() {
+      if (earnedBadge) return;
+      earnedBadge = true;
+      badgeVisual.classList.add("earned");
+      badgeState.textContent = "Earned — competency threshold met";
+    }
+
+    verifyBtn.addEventListener("click", verifyDocumentation);
+
+    clearBtn.addEventListener("click", () => {
+      docInput.value = "";
+      diagnosticPanel.classList.remove("show");
+      modelNote.classList.remove("show");
+      docScoreText.textContent = "0 / 4";
+    });
+
+    renderCases();
+  </script>
+</body>
+</html>
