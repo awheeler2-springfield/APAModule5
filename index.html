@@ -358,6 +358,27 @@
 
     .feedback p:last-child{margin-bottom:0}
 
+    .feedback-example{
+      margin-top:14px;
+      padding:14px;
+      border-radius:12px;
+      border:1px solid rgba(0,0,0,.08);
+      background:rgba(255,255,255,.72);
+    }
+
+    .feedback-example .example-label{
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      color:var(--accent);
+      margin-bottom:6px;
+    }
+
+    .feedback-example .example-why{
+      margin-top:10px;
+    }
+
     .sidebar-card{
       padding:18px;
       border-bottom:1px solid var(--line);
@@ -861,6 +882,8 @@
         rationale: "The source is present, but the paragraph does not explain how the lower pain scores support the broader claim about recovery outcomes.",
         implication: "In healthcare writing, evidence that is dropped into a paragraph without explanation may weaken the justification for a recommendation or conclusion.",
         stabilizer: "The issue is not source presence alone; it is whether the evidence is doing reasoning work for the reader.",
+        strongerVersion: "“Effective pain management improves patient recovery outcomes. A recent study found that patients receiving multimodal pain treatment reported lower pain scores (Garcia et al., 2022), suggesting that better pain control may help patients recover more comfortably and participate more fully in post-operative care.”",
+        strongerWhy: "This version explains how the evidence supports the claim about recovery rather than leaving the study isolated.",
         incorrectFeedback: "Look at what happens after the evidence appears. Does the paragraph actually explain how that evidence supports the claim?"
       },
       {
@@ -880,6 +903,8 @@
         rationale: "The evidence is relevant, but the explanation 'This is helpful' is too vague to show how the finding supports the specific claim about adherence.",
         implication: "Readers need more than a general comment; they need explanation that makes the evidence meaningful inside the paragraph.",
         stabilizer: "The paragraph is not missing evidence. It is missing a usable explanation of what that evidence means here.",
+        strongerVersion: "“Patient education can improve medication adherence. Research shows that patients who understand their treatment plans are more likely to follow them (Nguyen & Patel, 2021), indicating that clearer patient education may directly support better medication follow-through.”",
+        strongerWhy: "This version replaces the vague statement with an explanation of how the evidence supports the claim about adherence.",
         incorrectFeedback: "Ask whether the writer explains what the evidence shows, or only gestures toward support."
       },
       {
@@ -899,6 +924,8 @@
         rationale: "The cited evidence is about charting preferences, not hydration or complications. The problem is the weak connection between claim and evidence.",
         implication: "Misaligned evidence can create the appearance of support without actually justifying the claim.",
         stabilizer: "A source can be credible and still fail to support the point if it is not relevant to the paragraph’s reasoning.",
+        strongerVersion: "“Hydration is essential for preventing complications in hospitalized patients. Research has shown that inadequate fluid intake is associated with increased risk of confusion, falls, and delayed recovery in hospitalized adults (Patel & Wong, 2022), which supports the need for close hydration monitoring in patient care.”",
+        strongerWhy: "This version uses evidence that actually matches the claim and then explains how that evidence supports the point.",
         incorrectFeedback: "Focus on the relationship between the claim and the source. Does this evidence actually support the point about hydration?"
       },
       {
@@ -918,6 +945,8 @@
         rationale: "The evidence is relevant, but the paragraph does not clearly explain how the findings about slower recovery and lower satisfaction support the recommendation to assess sleep quality.",
         implication: "When the reasoning link is thin, the recommendation may sound intuitive rather than evidence-based.",
         stabilizer: "The problem is not that the evidence is unrelated. The problem is that the paragraph leaves too much of the reasoning unstated.",
+        strongerVersion: "“Sleep quality should be assessed during inpatient recovery. Patients with interrupted sleep often report slower recovery and lower satisfaction (Morris et al., 2020), suggesting that routine attention to sleep conditions may help clinicians identify barriers to recovery earlier.”",
+        strongerWhy: "This version makes the reasoning step explicit by explaining why the evidence supports the recommendation.",
         incorrectFeedback: "Look for the step where the paragraph should explain why the finding leads to the recommendation. Is that step fully present?"
       },
       {
@@ -937,6 +966,8 @@
         rationale: "The evidence is relevant, but the paragraph shifts to a broad statement instead of explaining how interpreter access would address the documented misunderstandings.",
         implication: "Even credible evidence can lose force when the paragraph does not clearly show how the source supports the proposed action.",
         stabilizer: "The source is not the issue. The issue is that the paragraph does not finish the reasoning work for the reader.",
+        strongerVersion: "“Hospitals should expand interpreter access for patients with limited English proficiency. Studies have found that language barriers are associated with misunderstandings about discharge instructions and medication use (Santos & Reeves, 2023), suggesting that better interpreter support may improve patient comprehension and reduce medication-related confusion after discharge.”",
+        strongerWhy: "This version explains how the evidence supports the recommendation instead of shifting to a broad statement.",
         incorrectFeedback: "Ask whether the paragraph makes the support relationship explicit, or whether it moves away from the evidence before the reasoning is complete."
       },
       {
@@ -1102,6 +1133,42 @@
       progressFill.style.width = `${(done / total) * 100}%`;
     }
 
+    function renderCorrectFeedback(c) {
+      const hasExample = !!c.strongerVersion;
+
+      feedbackEl.className = "feedback show correct";
+      feedbackEl.innerHTML = `
+        <div class="title">✓ Correct Assessment</div>
+        <p><strong>Rationale:</strong> ${c.rationale}</p>
+        <p><strong>Professional implication:</strong> ${c.implication}</p>
+        <p>${c.stabilizer}</p>
+        ${hasExample ? `
+          <div class="feedback-example">
+            <div class="example-label">Stronger version</div>
+            <p>${c.strongerVersion}</p>
+            <p class="example-why"><strong>Why this works better:</strong> ${c.strongerWhy}</p>
+          </div>
+        ` : ``}
+      `;
+    }
+
+    function renderIncorrectFeedback(c) {
+      const hasExample = !!c.strongerVersion;
+
+      feedbackEl.className = "feedback show incorrect";
+      feedbackEl.innerHTML = `
+        <div class="title">✗ Reassessment Needed</div>
+        <p>${c.incorrectFeedback}</p>
+        ${hasExample ? `
+          <div class="feedback-example">
+            <div class="example-label">Stronger version</div>
+            <p>${c.strongerVersion}</p>
+            <p class="example-why"><strong>Why this works better:</strong> ${c.strongerWhy}</p>
+          </div>
+        ` : ``}
+      `;
+    }
+
     checkBtn.addEventListener("click", () => {
       if (selectedIndex === null || lockedCurrentCase) return;
 
@@ -1112,21 +1179,11 @@
 
       if (correct) {
         lockedCurrentCase = true;
-        feedbackEl.className = "feedback show correct";
-        feedbackEl.innerHTML = `
-          <div class="title">✓ Correct Assessment</div>
-          <p><strong>Rationale:</strong> ${c.rationale}</p>
-          <p><strong>Professional implication:</strong> ${c.implication}</p>
-          <p>${c.stabilizer}</p>
-        `;
+        renderCorrectFeedback(c);
         caseStatus.textContent = "Reviewed";
         nextBtn.classList.remove("hidden");
       } else {
-        feedbackEl.className = "feedback show incorrect";
-        feedbackEl.innerHTML = `
-          <div class="title">✗ Reassessment Needed</div>
-          <p>${c.incorrectFeedback}</p>
-        `;
+        renderIncorrectFeedback(c);
       }
     });
 
