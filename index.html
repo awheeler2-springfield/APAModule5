@@ -533,6 +533,36 @@
 
     .transfer-box.show{display:block}
 
+    .annotation-box{
+      display:none;
+      margin-top:14px;
+      background:#fffef8;
+      border:1px solid #f0e1a8;
+      border-left:6px solid var(--gold);
+      border-radius:14px;
+      padding:18px;
+    }
+
+    .annotation-box.show{display:block}
+
+    .annotation-paragraph{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:14px;
+      margin-bottom:14px;
+    }
+
+    .annotation-list{
+      margin:0;
+      padding-left:18px;
+      color:var(--text);
+    }
+
+    .annotation-list li{
+      margin-bottom:8px;
+    }
+
     .mini-note{
       font-size:14px;
       color:var(--muted);
@@ -746,6 +776,19 @@
                   </p>
                 </div>
 
+                <div class="annotation-box" id="annotationBox">
+                  <div class="eyebrow">Successful Integration Example</div>
+                  <div class="annotation-paragraph">
+                    “Sleep quality should be assessed during inpatient recovery. Patients with interrupted sleep often report slower recovery and lower satisfaction (Morris et al., 2020), which suggests that improving sleep conditions may support better patient outcomes.”
+                  </div>
+                  <ul class="annotation-list">
+                    <li><strong>Claim:</strong> The paragraph establishes a clear point about assessing sleep quality.</li>
+                    <li><strong>Evidence:</strong> The study finding gives relevant support connected to recovery.</li>
+                    <li><strong>Explanation:</strong> “which suggests” explains what the evidence means in this paragraph.</li>
+                    <li><strong>Coherence:</strong> The reader can follow the movement from claim to evidence to conclusion without a gap.</li>
+                  </ul>
+                </div>
+
                 <div class="transfer-box" id="transferBox">
                   <div class="eyebrow">Transfer Forward</div>
                   <p>
@@ -761,7 +804,7 @@
           <div class="panel">
             <div class="sidebar-card">
               <div class="eyebrow">Progress</div>
-              <div id="progressText">0 of 5 cases completed</div>
+              <div id="progressText">0 of 6 cases completed</div>
               <div class="progress-track">
                 <div class="progress-fill" id="progressFill"></div>
               </div>
@@ -895,6 +938,25 @@
         implication: "Even credible evidence can lose force when the paragraph does not clearly show how the source supports the proposed action.",
         stabilizer: "The source is not the issue. The issue is that the paragraph does not finish the reasoning work for the reader.",
         incorrectFeedback: "Ask whether the paragraph makes the support relationship explicit, or whether it moves away from the evidence before the reasoning is complete."
+      },
+      {
+        title: "Case 5.6 — Integration Review",
+        prompt: {
+          situation: "A student is writing about sleep conditions during inpatient recovery.",
+          written: "“Sleep quality should be assessed during inpatient recovery. Patients with interrupted sleep often report slower recovery and lower satisfaction (Morris et al., 2020), which suggests that improving sleep conditions may support better patient outcomes.”",
+          question: "What is working most effectively in this paragraph?"
+        },
+        options: [
+          "The paragraph clearly explains how the evidence supports the claim.",
+          "The citation is present, so no explanation is needed.",
+          "The paragraph avoids making any interpretation of the evidence.",
+          "The evidence is broad enough that it does not need to connect closely to the claim."
+        ],
+        correct: 0,
+        rationale: "The paragraph does more than include evidence. It explains what the finding suggests and connects that meaning to the claim about inpatient recovery.",
+        implication: "In healthcare writing, integrated reasoning helps readers understand how evidence supports a recommendation or conclusion.",
+        stabilizer: "This is what effective integration looks like: claim → evidence → explanation.",
+        incorrectFeedback: "Look for the part of the paragraph that explains what the evidence means. Is the support relationship made visible to the reader?"
       }
     ];
 
@@ -967,6 +1029,7 @@
     const verifyMessage = document.getElementById("verifyMessage");
     const revisionNote = document.getElementById("revisionNote");
     const modelBox = document.getElementById("modelBox");
+    const annotationBox = document.getElementById("annotationBox");
     const transferBox = document.getElementById("transferBox");
 
     const badgeCard = document.getElementById("badgeCard");
@@ -1160,6 +1223,7 @@
         badgeTitle.textContent = "Evidence Integration Specialist";
         badgeSub.textContent = "Competency verified. Module 5 complete.";
         modelBox.classList.add("show");
+        annotationBox.classList.add("show");
         transferBox.classList.add("show");
         revisionNote.classList.add("hidden");
         revisionNote.innerHTML = "";
@@ -1167,6 +1231,7 @@
         verifyMessage.innerHTML = `<strong>Threshold not yet met.</strong> Revise and resubmit.`;
         renderRevisionTargets(results);
         modelBox.classList.remove("show");
+        annotationBox.classList.remove("show");
         transferBox.classList.remove("show");
       }
     });
