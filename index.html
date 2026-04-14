@@ -346,7 +346,7 @@
 
     textarea{
       width:100%;
-      min-height:180px;
+      min-height:190px;
       border:1px solid var(--line);
       border-radius:14px;
       padding:14px;
@@ -400,6 +400,12 @@
 
     .diag-fail{
       color:var(--danger);
+    }
+
+    .diag-count{
+      margin-top:6px;
+      font-size:13px;
+      color:var(--muted);
     }
 
     .outcome{
@@ -636,56 +642,128 @@
       }
     ];
 
+    /*
+      Expanded pattern bank:
+      - Each category contains lexical families and student-like phrasing.
+      - The system detects conceptual presence, not quality.
+      - 3 of 4 categories required for passing.
+    */
     const protocolCategories = [
       {
         label: "Connection between claim and evidence",
         patterns: [
-          /connect/i,
-          /link/i,
-          /relat(es|e|ed|ing)?\s+(the\s+)?evidence\s+(to|with)\s+(the\s+)?claim/i,
-          /support(s|ed|ing)?\s+(the\s+)?claim/i,
-          /evidence\s+(and|to)\s+(the\s+)?claim/i,
-          /ties?\s+(the\s+)?evidence\s+to\s+(the\s+)?claim/i,
-          /shows?\s+how\s+(the\s+)?evidence\s+supports?\s+(the\s+)?claim/i
+          /\bconnect(s|ed|ing)?\b/i,
+          /\blink(s|ed|ing)?\b/i,
+          /\btie(s|d|ing)?\b/i,
+          /\brelat(e|es|ed|ing)\b/i,
+          /\bcorrespond(s|ed|ing)?\b/i,
+          /\balign(s|ed|ing)?\b/i,
+          /\bsupport(s|ed|ing)?\s+(the\s+)?(claim|point|idea|argument)\b/i,
+          /\bback(s|ed|ing)?\s+up\s+(the\s+)?(claim|point|idea|argument)\b/i,
+          /\breinforce(s|d|ing)?\s+(the\s+)?(claim|point|idea|argument)\b/i,
+          /\bprovide(s|d)?\s+evidence\s+for\b/i,
+          /\bgive(s|gave)?\s+evidence\s+for\b/i,
+          /\bshows?\s+how\s+(the\s+)?evidence\s+(connects?|links?|relates?|supports?)\b/i,
+          /\bshows?\s+the\s+relationship\s+between\b/i,
+          /\brelat(es|e)?\s+the\s+evidence\s+to\s+the\s+(claim|point|idea|argument)\b/i,
+          /\bties?\s+the\s+research\s+to\s+the\s+(claim|point|idea|argument)\b/i,
+          /\bmatches?\s+the\s+claim\b/i,
+          /\bgoes?\s+with\s+the\s+claim\b/i,
+          /\bfit(s|ted|ting)?\s+the\s+(claim|point|idea|argument)\b/i
         ]
       },
       {
         label: "Explanation of how evidence supports reasoning",
         patterns: [
-          /shows?\s+that/i,
-          /demonstrat(es|e|ed|ing)?/i,
-          /indicat(es|e|ed|ing)?/i,
-          /explain(s|ed|ing)?\s+how/i,
-          /support(s|ed|ing)?\s+the\s+reason/i,
-          /reason(ing)?/i,
-          /why\s+the\s+evidence/i,
-          /what\s+the\s+evidence\s+means/i
+          /\bshows?\s+that\b/i,
+          /\bdemonstrat(es|ed|ing)?\s+that\b/i,
+          /\bindicat(es|ed|ing)?\s+that\b/i,
+          /\bsuggest(s|ed|ing)?\s+that\b/i,
+          /\breveal(s|ed|ing)?\s+that\b/i,
+          /\bmean(s|t|ing)?\s+that\b/i,
+          /\bthis\s+means\b/i,
+          /\bthis\s+shows\b/i,
+          /\bthis\s+demonstrates\b/i,
+          /\bthis\s+supports\b/i,
+          /\bexplains?\s+how\b/i,
+          /\bexplains?\s+why\b/i,
+          /\bhelp(s|ed|ing)?\s+explain\b/i,
+          /\bwhich\s+explains?\s+why\b/i,
+          /\bwhich\s+shows?\s+why\b/i,
+          /\bthis\s+matters\s+because\b/i,
+          /\bthis\s+is\s+important\s+because\b/i,
+          /\bbecause\s+it\s+shows\b/i,
+          /\bbecause\s+it\s+demonstrates\b/i,
+          /\blead(s|ing)?\s+to\b/i,
+          /\bresults?\s+in\b/i,
+          /\bcontribut(es|ed|ing)?\s+to\b/i,
+          /\bsupport(s|ed|ing)?\s+the\s+reason(ing)?\b/i,
+          /\bexplain(s|ed|ing)?\s+the\s+reason(ing)?\b/i,
+          /\bwhat\s+the\s+evidence\s+means\b/i,
+          /\bwhy\s+the\s+evidence\s+matters\b/i,
+          /\bhow\s+the\s+evidence\s+supports\b/i,
+          /\bhow\s+the\s+research\s+supports\b/i
         ]
       },
       {
         label: "Avoidance of dropped/disconnected evidence",
         patterns: [
-          /not\s+just\s+(add|added|attach|attached|include|included)/i,
-          /not\s+be\s+left\s+alone/i,
-          /not\s+simply\s+(attached|added|included)/i,
-          /avoid(s|ed|ing)?\s+dropped\s+evidence/i,
-          /avoid(s|ed|ing)?\s+disconnect(ed|ion)?/i,
-          /must\s+be\s+explained/i,
-          /cannot\s+stand\s+alone/i,
-          /rather\s+than\s+simply\s+attach/i
+          /\bnot\s+just\s+(add|added|adding|attach|attached|attaching|include|included|including|drop|dropped|dropping)\b/i,
+          /\bnot\s+simply\s+(add|added|attach|attached|include|included|drop|dropped)\b/i,
+          /\bcannot\s+stand\s+alone\b/i,
+          /\bcan['’]t\s+stand\s+alone\b/i,
+          /\bshould\s+not\s+stand\s+alone\b/i,
+          /\bmust\s+be\s+explained\b/i,
+          /\bneeds?\s+explanation\b/i,
+          /\bneeds?\s+to\s+be\s+explained\b/i,
+          /\brequires?\s+explanation\b/i,
+          /\brequires?\s+interpretation\b/i,
+          /\bshouldn['’]t\s+be\s+left\s+alone\b/i,
+          /\bnot\s+be\s+left\s+alone\b/i,
+          /\bavoid(s|ed|ing)?\s+dropped\s+evidence\b/i,
+          /\bavoid(s|ed|ing)?\s+disconnect(ed|ion)?\b/i,
+          /\bavoid(s|ed|ing)?\s+drop(ped|ping)?\s+quotes?\b/i,
+          /\bnot\s+enough\s+to\s+(cite|add|include)\b/i,
+          /\bjust\s+putting\s+(a\s+)?citation\s+isn['’]t\s+enough\b/i,
+          /\bjust\s+adding\s+evidence\s+isn['’]t\s+enough\b/i,
+          /\bevidence\s+should\s+not\s+just\s+be\s+there\b/i,
+          /\bevidence\s+shouldn['’]t\s+just\s+be\s+there\b/i,
+          /\bnot\s+just\s+drop\s+in\s+(a\s+)?quote\b/i,
+          /\bnot\s+just\s+insert\s+evidence\b/i,
+          /\bmore\s+than\s+just\s+(a\s+)?citation\b/i,
+          /\brather\s+than\s+simply\s+attach\b/i,
+          /\brather\s+than\s+just\s+attach\b/i,
+          /\brather\s+than\s+just\s+add\b/i
         ]
       },
       {
         label: "Reader clarity or coherence",
         patterns: [
-          /clear/i,
-          /clarity/i,
-          /coheren(t|ce)/i,
-          /reader/i,
-          /understand/i,
-          /easy\s+to\s+follow/i,
-          /makes?\s+sense/i,
-          /confus(e|ing|ion)/i
+          /\bclear\b/i,
+          /\bclarity\b/i,
+          /\bcoheren(t|ce)\b/i,
+          /\blogical(ly)?\b/i,
+          /\blogic\b/i,
+          /\bflow(s|ed|ing)?\b/i,
+          /\breader\b/i,
+          /\baudience\b/i,
+          /\bunderstand(s|ing)?\b/i,
+          /\bunderstandable\b/i,
+          /\beasy\s+to\s+follow\b/i,
+          /\bmakes?\s+sense\b/i,
+          /\bhelps?\s+the\s+reader\b/i,
+          /\bhelps?\s+readers\b/i,
+          /\bso\s+the\s+reader\s+knows\b/i,
+          /\bso\s+readers?\s+know\b/i,
+          /\bprevents?\s+confusion\b/i,
+          /\bavoid(s|ed|ing)?\s+confusion\b/i,
+          /\bconfus(e|es|ed|ing|ion)\b/i,
+          /\bmore\s+clear\b/i,
+          /\bclearer\b/i,
+          /\bcoherent\s+explanation\b/i,
+          /\bhelps?\s+with\s+coherence\b/i,
+          /\bimprove(s|d)?\s+clarity\b/i,
+          /\bimprove(s|d)?\s+coherence\b/i
         ]
       }
     ];
@@ -762,8 +840,8 @@
     }
 
     function lockCase(index) {
-      const submitBtn = document.querySelector(`button[data-index="${index}"]`);
-      const radios = document.querySelectorAll(`input[name="case-${index}"]`);
+      const submitBtn = document.querySelector(\`button[data-index="\${index}"]\`);
+      const radios = document.querySelectorAll(\`input[name="case-\${index}"]\`);
       submitBtn.disabled = true;
       submitBtn.classList.remove("primary");
       submitBtn.classList.add("secondary");
@@ -772,8 +850,8 @@
     }
 
     function handleCaseSubmit(index) {
-      const selected = document.querySelector(`input[name="case-${index}"]:checked`);
-      const feedbackBox = document.getElementById(`feedback-${index}`);
+      const selected = document.querySelector(\`input[name="case-\${index}"]:checked\`);
+      const feedbackBox = document.getElementById(\`feedback-\${index}\`);
 
       if (!selected) {
         feedbackBox.className = "feedback incorrect show";
@@ -792,7 +870,7 @@
       answeredCases += 1;
       if (isCorrect) correctCases += 1;
 
-      feedbackBox.className = `feedback ${isCorrect ? "correct" : "incorrect"} show`;
+      feedbackBox.className = \`feedback \${isCorrect ? "correct" : "incorrect"} show\`;
       feedbackBox.innerHTML = `
         <h4>${isCorrect ? "✔ Correct" : "✘ Incorrect"}</h4>
         <p><strong>Rationale:</strong> ${item.rationale}</p>
@@ -809,14 +887,26 @@
       handleCaseSubmit(Number(btn.dataset.index));
     });
 
-    function detectCategory(text, patterns) {
-      return patterns.some(pattern => pattern.test(text));
+    function normalizeText(text) {
+      return text
+        .toLowerCase()
+        .replace(/[’']/g, "'")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function getCategoryHitCount(text, patterns) {
+      let count = 0;
+      for (const pattern of patterns) {
+        if (pattern.test(text)) count += 1;
+      }
+      return count;
     }
 
     function verifyDocumentation() {
-      const text = docInput.value.trim();
+      const rawText = docInput.value.trim();
 
-      if (!text) {
+      if (!rawText) {
         diagnosticPanel.classList.add("show");
         diagList.innerHTML = `
           <div class="diag-item">
@@ -829,18 +919,23 @@
         return;
       }
 
+      const text = normalizeText(rawText);
       let score = 0;
       diagList.innerHTML = "";
 
       protocolCategories.forEach(category => {
-        const hit = detectCategory(text, category.patterns);
+        const hitCount = getCategoryHitCount(text, category.patterns);
+        const hit = hitCount > 0;
         if (hit) score += 1;
 
         const item = document.createElement("div");
         item.className = "diag-item";
         item.innerHTML = `
           <span class="diag-mark ${hit ? "diag-pass" : "diag-fail"}">${hit ? "✔" : "✘"}</span>
-          <div>${category.label}</div>
+          <div>
+            <div>${category.label}</div>
+            <div class="diag-count">${hit ? `Detected language signals: ${hitCount}` : "No matching language signals detected"}</div>
+          </div>
         `;
         diagList.appendChild(item);
       });
